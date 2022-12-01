@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScanToPDF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
     <Grid>
-        
+        <Label x:Name="console" Content="Label" HorizontalAlignment="Left" Margin="483,340,0,0" VerticalAlignment="Top" Height="69" Width="299"/>
+        <ComboBox x:Name="cmbScanners" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="251" FontSize="15" SelectionChanged="cmbScanners_SelectionChanged"/>
+        <Label x:Name="lblDeviceInfo" Content="" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Height="182" Width="251" OpacityMask="White" BorderBrush="Black" Foreground="White" Background="White" FontSize="15"/>
+
     </Grid>
 </Window>
