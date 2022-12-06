@@ -3,40 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WIA;
 
 namespace ScanToPDF
 {
     class Scanner
     {
-        private string name;
-        private string description;
-        private string port;
 
-        public Scanner(string name, string description, string port)
+        private DeviceInfo deviceInfo;
+
+        public Scanner(DeviceInfo deviceInfo)
         {
-            this.name = name;
-            this.description = description;
-            this.port = port;
-        }
+            this.deviceInfo = deviceInfo;
 
-        public String getName()
-        {
-            return name;
         }
-
-        public String getDescription()
-        {
-            return description;
-        }
-
-        public string getPort()
-        {
-            return port;
-        }
-
         public override string ToString()
         {
-            return getName();
+            return (string) deviceInfo.Properties["Name"].get_Value();
+        }
+
+        public DeviceInfo GetDeviceInfo()
+        {
+            return deviceInfo;
         }
     }
 }
