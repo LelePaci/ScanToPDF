@@ -9,7 +9,6 @@ namespace ScanToPDF
 {
     class Scanner
     {
-
         private DeviceInfo deviceInfo;
 
         public Scanner(DeviceInfo deviceInfo)
@@ -19,7 +18,7 @@ namespace ScanToPDF
         }
         public override string ToString()
         {
-            return (string) deviceInfo.Properties["Name"].get_Value();
+            return (string)deviceInfo.Properties["Name"].get_Value();
         }
 
         public DeviceInfo GetDeviceInfo()
