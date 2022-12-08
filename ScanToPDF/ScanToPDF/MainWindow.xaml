@@ -5,10 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScanToPDF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+        Title="Scan to PDF" Height="543.5" Width="578.667" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" ResizeMode="NoResize" Topmost="True" WindowStartupLocation="CenterScreen">
     <Grid>
-        <ComboBox x:Name="cmbScanners" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="251" FontSize="15" SelectionChanged="cmbScanners_SelectionChanged"/>
-        <Button x:Name="btnScan" Content="Scan" HorizontalAlignment="Left" Margin="140,100,0,0" VerticalAlignment="Top" Width="136" Height="36" Click="btnScan_Click"/>
+        <ComboBox x:Name="cmbScanners" Margin="218,10,10,0" VerticalAlignment="Top" FontSize="15" SelectionChanged="cmbScanners_SelectionChanged" Height="31"/>
+        <Button x:Name="btnScan" Content="Esegui scansione" Margin="10,46,10,0" Click="btnScan_Click" FontSize="25" Height="61" VerticalAlignment="Top"/>
+        <ListBox x:Name="listDocuments" Height="214" Margin="10,162,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="489"/>
+        <Label Content="Seleziona dispositivo:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="271" FontSize="16"/>
+        <Label Content="Documenti acquisiti:" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top" Width="186" FontSize="16"/>
+        <Button x:Name="btnPreview" Content="Anteprima" HorizontalAlignment="Left" Margin="10,381,0,0" VerticalAlignment="Top" Width="267" Height="31"/>
+        <Button x:Name="btnDelete" Content="Rimuovi" Margin="287,381,0,0" VerticalAlignment="Top" Height="31" HorizontalAlignment="Left" Width="269"/>
+        <Button x:Name="btnUp" Content="Su" Margin="506,219,17,0" VerticalAlignment="Top" Height="50"/>
+        <Button x:Name="btnDown" Content="Giù" Margin="506,274,17,0" VerticalAlignment="Top" Height="50"/>
+        <Button x:Name="btnCreatePDF" Content="Crea documento PDF" Margin="10,441,10,10" Click="btnScan_Click" FontSize="25"/>
+        <Label Content="Sposta" Margin="501,183,10,0" VerticalAlignment="Top" FontSize="16"/>
 
     </Grid>
 </Window>

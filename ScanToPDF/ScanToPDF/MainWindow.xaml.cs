@@ -35,6 +35,7 @@ namespace ScanToPDF
         public MainWindow()
         {
             InitializeComponent();
+            DisablingComponents();
             LoadScanners();
             CheckFolders();
         }
@@ -59,26 +60,91 @@ namespace ScanToPDF
             Directory.CreateDirectory(scansDirectory);
         }
 
+        private void DisablingComponents()
+        {
+            btnScan.IsEnabled = false;
+            listDocuments.IsEnabled = false;
+            btnUp.IsEnabled = false;
+            btnDown.IsEnabled = false;
+            btnPreview.IsEnabled = false;
+            btnDelete.IsEnabled = false;
+            btnCreatePDF.IsEnabled = false;
+        }
         private void cmbScanners_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Scanner s = (Scanner)cmbScanners.SelectedItem;
             currentDeviceInfo = s.GetDeviceInfo();
+
+            if (cmbScanners.SelectedIndex != -1)
+            {
+                btnScan.IsEnabled = true;
+            }
+            else
+            {
+                btnScan.IsEnabled = false;
+            }
         }
 
         private void btnScan_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // Connette il device scelto per eseguire la scansione
                 Device device = currentDeviceInfo.Connect();
-                Item i = device.Items[1];
+                Item item = device.Items[1];
 
-                ImageFile imgFile = (ImageFile)i.Transfer(FormatID.wiaFormatJPEG);
-                string path = scansDirectory + @"\scan" + DateTime.Now.ToString(format) + ".jpg";
+                // Sistemo le proprietà dello scanner selezionato
+                SettingsWia(item);
+
+                // Ottiene un immagine in formato "jpg" dalla scansione
+                ImageFile imgFile = (ImageFile)item.Transfer(FormatID.wiaFormatJPEG);
+
+                // Salva l'immagine ottenuta 
+                string name = "scan" + DateTime.Now.ToString(format) + ".jpg";
+                string path = scansDirectory + @"\" +  name;
                 imgFile.SaveFile(path);
+
+                listDocuments.Items.Add(name);
+
+                // Controllo che siano presenti degli item e in caso positivio abilito la ListView e i pulsanti per rimuovere elementi
+                // e per visualizzare le anteprime
+                // Abilito anche il pulsante per creare il documento in PDF
+                if (listDocuments.Items.Count > 0)
+                {
+                    listDocuments.IsEnabled = true;
+                    btnCreatePDF.IsEnabled = true;
+                    btnPreview.IsEnabled = true;
+                    btnDelete.IsEnabled = true;
+                }
+                else
+                {
+                    listDocuments.IsEnabled = false;
+                    btnCreatePDF.IsEnabled = false;
+                    btnPreview.IsEnabled = false;
+                    btnDelete.IsEnabled = false;
+                }
+
+                // Controllo che sia presente più di un elemento nella ListView e in caso positivo abilito i pulsanti per spostare gli oggetti
+                if (listDocuments.Items.Count > 1)
+                {
+                    btnUp.IsEnabled = true;
+                    btnDown.IsEnabled = true;
+                }
+                else
+                {
+                    btnUp.IsEnabled = false;
+                    btnDown.IsEnabled = false;
+                }
+
+                //// Mostra l'immagine ottenuta all'interno di una Image
+                //imgScan.Source = new BitmapImage(new Uri(path));
+
+                //imgScan.Stretch = Stretch.Uniform;
             }
             catch (COMException ex)
             {
                 MessageBox.Show(getExceptionMessage((uint)ex.ErrorCode));
+                Console.WriteLine(ex.Message);
             }
             catch (NullReferenceException ex)
             {
@@ -127,8 +193,19 @@ namespace ScanToPDF
                 case 0x80210005:
                     message = "Il dispositivò è offline. Assicurarsi che il dispositivo sia acceso e connesso al PC";
                     break;
+                default:
+                    message = errorCode.ToString();
+                    break;
             }
             return message;
+        }
+
+        private void SettingsWia(Item item)
+        {
+            item.Properties["6146"].set_Value(1); // Modalià colore 1 -> colori
+            item.Properties["6147"].set_Value(150); // DPI verticale
+            item.Properties["6148"].set_Value(150); // DPI orizzontale
+            item.Properties["6151"].set_Value(1243); // Larghezza della pagina
         }
     }
 }
