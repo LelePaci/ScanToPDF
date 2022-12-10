@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -39,7 +41,7 @@ namespace ScanToPDF
         public MainWindow()
         {
             InitializeComponent();
-            DisablingComponents();
+            CheckEnabling();
             LoadScanners();
             CheckFolders();
 
@@ -66,7 +68,7 @@ namespace ScanToPDF
             Directory.CreateDirectory(scansDirectory);
         }
 
-        private void DisablingComponents()
+        private void CheckEnabling()
         {
             btnScan.IsEnabled = false;
             listDocuments.IsEnabled = false;
@@ -208,7 +210,8 @@ namespace ScanToPDF
 
         private void SettingsWia(Item item)
         {
-            item.Properties["6146"].set_Value(1); // Modalià colore 1 -> colori
+            item.Properties["4104"].set_Value(24);
+            item.Properties["6146"].set_Value(1); // Modalià colore 1 -> colori , 2 -> grayscale
             item.Properties["6147"].set_Value(150); // DPI verticale
             item.Properties["6148"].set_Value(150); // DPI orizzontale
             item.Properties["6151"].set_Value(1243); // Larghezza della pagina
@@ -216,7 +219,21 @@ namespace ScanToPDF
 
         private void btnCreatePDF_Click(object sender, RoutedEventArgs e)
         {
+            PdfDocument doc = new PdfDocument();
+            foreach (PhotoElement pe in listDocuments.Items)
+            {
+                PdfPage page = doc.AddPage();
 
+                XImage image = XImage.FromFile(pe.getPath());
+                XGraphics graphics = XGraphics.FromPdfPage(page);
+                graphics.DrawImage(image, 0, 0, page.Width, page.Height);
+            }
+            if (doc.PageCount > 0)
+            {
+                string name = "pdf" + DateTime.Now.ToString(format) + ".pdf";
+                string path = resultDirectory + @"\" + name;
+                doc.Save(path);
+            }
         }
 
         private void listDocuments_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -245,6 +262,16 @@ namespace ScanToPDF
 
             btnPreview.IsEnabled = false;
             btnDelete.IsEnabled = false;
+        }
+
+        private void toBlackWhite()
+        {
+
+        }
+
+        private void cmbColors_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
