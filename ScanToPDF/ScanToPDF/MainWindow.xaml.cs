@@ -25,16 +25,18 @@ namespace ScanToPDF
     /// </summary>
     public partial class MainWindow : Window
     {
-        // scanner
         private DeviceManager deviceManager = new DeviceManager();
         private DeviceInfo currentDeviceInfo = null;
 
         private List<Scanner> scannerList = new List<Scanner>();
 
-        // informazioni per salvataggio delle immagini
         private string scansDirectory = null;
         private string resultDirectory = null;
         private string format = "yyyyMMdd-HHmmss";
+
+        private int selectedColorMode = -1;
+        private int selectedDPI = -1;
+        private int currentPageWidth = 1;
 
         private PhotoElement currentPhotoElement = null;
 
@@ -45,7 +47,12 @@ namespace ScanToPDF
             LoadScanners();
             CheckFolders();
 
-            
+            cmbColors.Items.Add("Colori");
+            cmbColors.Items.Add("Scala di grigi");
+            cmbColors.Items.Add("Bianco e nero");
+
+            cmbDPI.Items.Add(150);
+            cmbDPI.Items.Add(300);
         }
 
         private void LoadScanners()
@@ -68,29 +75,65 @@ namespace ScanToPDF
             Directory.CreateDirectory(scansDirectory);
         }
 
+        private void enableCondition(bool condition, params Control[] components)
+        {
+            foreach (Control c in components)
+            {
+                c.IsEnabled = condition;
+            }
+        }
+
         private void CheckEnabling()
         {
-            btnScan.IsEnabled = false;
-            listDocuments.IsEnabled = false;
-            btnUp.IsEnabled = false;
-            btnDown.IsEnabled = false;
-            btnPreview.IsEnabled = false;
-            btnDelete.IsEnabled = false;
-            btnCreatePDF.IsEnabled = false;
+            enableCondition((cmbScanners.SelectedIndex == 0), cmbColors, cmbDPI,
+                btnScan, listDocuments, btnUp, btnDown, btnPreview, btnDelete, btnCreatePDF);
         }
         private void cmbScanners_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Scanner s = (Scanner)cmbScanners.SelectedItem;
             currentDeviceInfo = s.GetDeviceInfo();
 
-            if (cmbScanners.SelectedIndex != -1)
+            enableCondition((cmbScanners.SelectedIndex != -1), cmbColors);
+        }
+
+        private void cmbColors_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //selectColor = (string)cmbColors.SelectedItem;
+            switch ((string)cmbColors.SelectedItem)
             {
-                btnScan.IsEnabled = true;
+
+                case "Colori":
+                    selectedColorMode = 1;
+                    break;
+                case "Scala di grigi":
+                    selectedColorMode = 2;
+                    break;
+                case "Bianco e nero":
+                    selectedColorMode = 4;
+                    break;
+                default:
+                    selectedColorMode = -1;
+                    break;
             }
-            else
+            enableCondition((cmbColors.SelectedIndex != -1 && selectedColorMode != -1), cmbDPI);
+        }
+
+        private void cmbDPI_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedDPI = Int32.Parse(cmbDPI.SelectedItem.ToString());
+            switch (cmbDPI.SelectedIndex)
             {
-                btnScan.IsEnabled = false;
+                case 0:
+                    currentPageWidth = 1243;
+                    break;
+                case 1:
+                    currentPageWidth = 2495;
+                    break;
+                default:
+                    currentPageWidth = -1;
+                    break;
             }
+            enableCondition((cmbDPI.SelectedIndex != -1 && currentPageWidth != -1), btnScan);
         }
 
         private void btnScan_Click(object sender, RoutedEventArgs e)
@@ -109,7 +152,7 @@ namespace ScanToPDF
 
                 // Salva l'immagine ottenuta 
                 string name = "scan" + DateTime.Now.ToString(format) + ".jpg";
-                string path = scansDirectory + @"\" +  name;
+                string path = scansDirectory + @"\" + name;
                 imgFile.SaveFile(path);
 
                 // Aggiunge le informazioni dell'immagine ad una ListBox
@@ -121,33 +164,9 @@ namespace ScanToPDF
                 // Controllo che siano presenti degli item e in caso positivio abilito la ListBox e i pulsanti per rimuovere elementi
                 // e per visualizzare le anteprime
                 // Abilito anche il pulsante per creare il documento in PDF
-                if (listDocuments.Items.Count > 0)
-                {
-                    listDocuments.IsEnabled = true;
-                    btnCreatePDF.IsEnabled = true;
-                }
-                else
-                {
-                    listDocuments.IsEnabled = false;
-                    btnCreatePDF.IsEnabled = false;
-                }
 
-                // Controllo che sia presente più di un elemento nella ListView e in caso positivo abilito i pulsanti per spostare gli oggetti
-                if (listDocuments.Items.Count > 1)
-                {
-                    btnUp.IsEnabled = true;
-                    btnDown.IsEnabled = true;
-                }
-                else
-                {
-                    btnUp.IsEnabled = false;
-                    btnDown.IsEnabled = false;
-                }
-
-                //// Mostra l'immagine ottenuta all'interno di una Image
-                //imgScan.Source = new BitmapImage(new Uri(path));
-
-                //imgScan.Stretch = Stretch.Uniform;
+                enableCondition((listDocuments.Items.Count > 0), listDocuments, btnCreatePDF);
+                enableCondition((listDocuments.Items.Count > 1), btnUp, btnDown);
             }
             catch (COMException ex)
             {
@@ -211,10 +230,12 @@ namespace ScanToPDF
         private void SettingsWia(Item item)
         {
             item.Properties["4104"].set_Value(24);
-            item.Properties["6146"].set_Value(1); // Modalià colore 1 -> colori , 2 -> grayscale
-            item.Properties["6147"].set_Value(150); // DPI verticale
-            item.Properties["6148"].set_Value(150); // DPI orizzontale
-            item.Properties["6151"].set_Value(1243); // Larghezza della pagina
+            item.Properties["6146"].set_Value(selectedColorMode); // Modalià colore 1 -> colori , 2 -> grayscale
+            item.Properties["6147"].set_Value(selectedDPI); // DPI verticale
+            item.Properties["6148"].set_Value(selectedDPI); // DPI orizzontale
+            item.Properties["6151"].set_Value(currentPageWidth); // Larghezza della pagina
+            //1243 - 150dpi
+            //2495 - 300dpi
         }
 
         private void btnCreatePDF_Click(object sender, RoutedEventArgs e)
@@ -238,12 +259,11 @@ namespace ScanToPDF
 
         private void listDocuments_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (listDocuments.SelectedIndex != -1)
+            if ((listDocuments.SelectedIndex != -1))
             {
                 currentPhotoElement = (PhotoElement)listDocuments.SelectedItem;
-                btnPreview.IsEnabled = true;
-                btnDelete.IsEnabled = true;
             }
+            enableCondition((listDocuments.SelectedIndex != -1), btnPreview, btnDelete);
         }
 
         private void btnPreview_Click(object sender, RoutedEventArgs e)
@@ -253,6 +273,7 @@ namespace ScanToPDF
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
+            //enableCondition(listDocuments.Items.Count > 0))
             listDocuments.Items.Remove(currentPhotoElement);
             listDocuments.SelectedItem = -1;
 
@@ -262,16 +283,8 @@ namespace ScanToPDF
 
             btnPreview.IsEnabled = false;
             btnDelete.IsEnabled = false;
-        }
-
-        private void toBlackWhite()
-        {
-
-        }
-
-        private void cmbColors_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
+            enableCondition((listDocuments.Items.Count > 1), btnUp, btnDown);
+            enableCondition((listDocuments.Items.Count > 0), listDocuments,btnCreatePDF);
         }
     }
 }
