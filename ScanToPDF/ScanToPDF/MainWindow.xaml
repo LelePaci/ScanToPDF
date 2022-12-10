@@ -9,14 +9,14 @@
     <Grid>
         <ComboBox x:Name="cmbScanners" Margin="218,10,10,0" VerticalAlignment="Top" FontSize="15" SelectionChanged="cmbScanners_SelectionChanged" Height="31"/>
         <Button x:Name="btnScan" Content="Esegui scansione" Margin="10,46,10,0" Click="btnScan_Click" FontSize="25" Height="61" VerticalAlignment="Top"/>
-        <ListBox x:Name="listDocuments" Height="214" Margin="10,162,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="477"/>
+        <ListBox x:Name="listDocuments" Height="214" Margin="10,162,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="477" SelectionChanged="listDocuments_SelectionChanged"/>
         <Label Content="Seleziona dispositivo:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="271" FontSize="16"/>
         <Label Content="Documenti acquisiti:" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top" Width="186" FontSize="16"/>
-        <Button x:Name="btnPreview" Content="Anteprima" HorizontalAlignment="Left" Margin="10,381,0,0" VerticalAlignment="Top" Width="267" Height="31"/>
-        <Button x:Name="btnDelete" Content="Rimuovi" Margin="287,381,0,0" VerticalAlignment="Top" Height="31" HorizontalAlignment="Left" Width="269"/>
+        <Button x:Name="btnPreview" Content="Anteprima" HorizontalAlignment="Left" Margin="10,381,0,0" VerticalAlignment="Top" Width="267" Height="31" Click="btnPreview_Click"/>
+        <Button x:Name="btnDelete" Content="Rimuovi" Margin="287,381,0,0" VerticalAlignment="Top" Height="31" HorizontalAlignment="Left" Width="269" Click="btnDelete_Click"/>
         <Button x:Name="btnUp" Content="Su" Margin="494,219,0,0" VerticalAlignment="Top" Height="50" HorizontalAlignment="Left" Width="60"/>
         <Button x:Name="btnDown" Content="Giù" Margin="494,274,0,0" VerticalAlignment="Top" Height="50" HorizontalAlignment="Left" Width="60"/>
-        <Button x:Name="btnCreatePDF" Content="Crea documento PDF" Margin="10,441,10,10" FontSize="25"/>
+        <Button x:Name="btnCreatePDF" Content="Crea documento PDF" Margin="10,441,10,10" FontSize="25" Click="btnCreatePDF_Click"/>
         <Label Content="Sposta" Margin="494,183,0,0" VerticalAlignment="Top" FontSize="16" HorizontalAlignment="Left" Width="60"/>
 
     </Grid>

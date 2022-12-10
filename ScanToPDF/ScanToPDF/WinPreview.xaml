@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScanToPDF"
-        mc:Ignorable="d" Height="352" Width="380" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize">
+        mc:Ignorable="d" Height="352" Width="379" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
         <Image x:Name="imgPreview" Height="271" Margin="10,10,10,0" VerticalAlignment="Top"/>
         <Button x:Name="btnOk" Content="Ok" Margin="0,0,10,13" VerticalAlignment="Bottom" FontSize="15" HorizontalAlignment="Right" Width="83" Click="btnOk_Click"/>

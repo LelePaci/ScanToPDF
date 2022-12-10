@@ -23,14 +23,18 @@ namespace ScanToPDF
     /// </summary>
     public partial class MainWindow : Window
     {
+        // scanner
         private DeviceManager deviceManager = new DeviceManager();
         private DeviceInfo currentDeviceInfo = null;
 
         private List<Scanner> scannerList = new List<Scanner>();
 
+        // informazioni per salvataggio delle immagini
         private string scansDirectory = null;
         private string resultDirectory = null;
         private string format = "yyyyMMdd-HHmmss";
+
+        private PhotoElement currentPhotoElement = null;
 
         public MainWindow()
         {
@@ -106,12 +110,13 @@ namespace ScanToPDF
                 string path = scansDirectory + @"\" +  name;
                 imgFile.SaveFile(path);
 
-                listDocuments.Items.Add(name);
+                // Aggiunge le informazioni dell'immagine ad una ListBox
+                PhotoElement pe = new PhotoElement(path, name);
+                listDocuments.Items.Add(pe);
 
-                WinPreview winPreview = new WinPreview(path);
-                winPreview.Show();
+                new WinPreview(pe).Show();
 
-                // Controllo che siano presenti degli item e in caso positivio abilito la ListView e i pulsanti per rimuovere elementi
+                // Controllo che siano presenti degli item e in caso positivio abilito la ListBox e i pulsanti per rimuovere elementi
                 // e per visualizzare le anteprime
                 // Abilito anche il pulsante per creare il documento in PDF
                 if (listDocuments.Items.Count > 0)
@@ -212,6 +217,34 @@ namespace ScanToPDF
         private void btnCreatePDF_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void listDocuments_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (listDocuments.SelectedIndex != -1)
+            {
+                currentPhotoElement = (PhotoElement)listDocuments.SelectedItem;
+                btnPreview.IsEnabled = true;
+                btnDelete.IsEnabled = true;
+            }
+        }
+
+        private void btnPreview_Click(object sender, RoutedEventArgs e)
+        {
+            new WinPreview(currentPhotoElement).Show();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            listDocuments.Items.Remove(currentPhotoElement);
+            listDocuments.SelectedItem = -1;
+
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            File.Delete(currentPhotoElement.getPath());
+
+            btnPreview.IsEnabled = false;
+            btnDelete.IsEnabled = false;
         }
     }
 }

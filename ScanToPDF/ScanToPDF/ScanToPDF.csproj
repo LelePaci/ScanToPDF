@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="PhotoElement.cs" />
     <Compile Include="Scanner.cs" />
     <Compile Include="WinPreview.xaml.cs">
       <DependentUpon>WinPreview.xaml</DependentUpon>

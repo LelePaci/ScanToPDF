@@ -19,17 +19,22 @@ namespace ScanToPDF
     /// </summary>
     public partial class WinPreview : Window
     {
-        public WinPreview(string path)
+        public WinPreview(PhotoElement pe)
         {
             InitializeComponent();
-            BitmapImage img = new BitmapImage(new Uri(path));
+            // Creo una BitmapImage dell'immagine tramite il path
+            BitmapImage img = new BitmapImage(new Uri(pe.getPath()));
+
             double width = img.Width * 0.75;
             double height = img.Height * 0.75;
-
+            
+            // Imposto le dimensioni dell'immagine 
             imgPreview.Width = width;
             imgPreview.Height = height;
             imgPreview.Source = img;
 
+            // Modifico le impostazioni della finestra
+            this.Title = pe.ToString();
             this.SizeToContent = SizeToContent.Width;
             this.Height = height + 90;
         }
