@@ -38,6 +38,8 @@ namespace ScanToPDF
             DisablingComponents();
             LoadScanners();
             CheckFolders();
+
+            
         }
 
         private void LoadScanners()
@@ -106,6 +108,9 @@ namespace ScanToPDF
 
                 listDocuments.Items.Add(name);
 
+                WinPreview winPreview = new WinPreview(path);
+                winPreview.Show();
+
                 // Controllo che siano presenti degli item e in caso positivio abilito la ListView e i pulsanti per rimuovere elementi
                 // e per visualizzare le anteprime
                 // Abilito anche il pulsante per creare il documento in PDF
@@ -113,15 +118,11 @@ namespace ScanToPDF
                 {
                     listDocuments.IsEnabled = true;
                     btnCreatePDF.IsEnabled = true;
-                    btnPreview.IsEnabled = true;
-                    btnDelete.IsEnabled = true;
                 }
                 else
                 {
                     listDocuments.IsEnabled = false;
                     btnCreatePDF.IsEnabled = false;
-                    btnPreview.IsEnabled = false;
-                    btnDelete.IsEnabled = false;
                 }
 
                 // Controllo che sia presente più di un elemento nella ListView e in caso positivo abilito i pulsanti per spostare gli oggetti
@@ -206,6 +207,11 @@ namespace ScanToPDF
             item.Properties["6147"].set_Value(150); // DPI verticale
             item.Properties["6148"].set_Value(150); // DPI orizzontale
             item.Properties["6151"].set_Value(1243); // Larghezza della pagina
+        }
+
+        private void btnCreatePDF_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
