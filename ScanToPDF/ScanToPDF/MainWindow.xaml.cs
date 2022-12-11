@@ -1,4 +1,5 @@
-﻿using PdfSharp.Drawing;
+﻿using Microsoft.Win32;
+using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace ScanToPDF
         public MainWindow()
         {
             InitializeComponent();
-            CheckEnabling();
+            InitialDisable();
             LoadScanners();
             CheckFolders();
 
@@ -53,6 +54,7 @@ namespace ScanToPDF
 
             cmbDPI.Items.Add(150);
             cmbDPI.Items.Add(300);
+
         }
 
         private void LoadScanners()
@@ -83,10 +85,10 @@ namespace ScanToPDF
             }
         }
 
-        private void CheckEnabling()
+        private void InitialDisable()
         {
             enableCondition((cmbScanners.SelectedIndex == 0), cmbColors, cmbDPI,
-                btnScan, listDocuments, btnUp, btnDown, btnPreview, btnDelete, btnCreatePDF);
+                btnScan, listDocuments, btnUp, btnDown, btnPreview, btnDelete, checkDelete, btnCreatePDF);
         }
         private void cmbScanners_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -99,16 +101,15 @@ namespace ScanToPDF
         private void cmbColors_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //selectColor = (string)cmbColors.SelectedItem;
-            switch ((string)cmbColors.SelectedItem)
+            switch (cmbColors.SelectedIndex)
             {
-
-                case "Colori":
+                case 0:
                     selectedColorMode = 1;
                     break;
-                case "Scala di grigi":
+                case 1:
                     selectedColorMode = 2;
                     break;
-                case "Bianco e nero":
+                case 2:
                     selectedColorMode = 4;
                     break;
                 default:
@@ -165,7 +166,7 @@ namespace ScanToPDF
                 // e per visualizzare le anteprime
                 // Abilito anche il pulsante per creare il documento in PDF
 
-                enableCondition((listDocuments.Items.Count > 0), listDocuments, btnCreatePDF);
+                enableCondition((listDocuments.Items.Count > 0), listDocuments, btnCreatePDF, checkDelete);
                 enableCondition((listDocuments.Items.Count > 1), btnUp, btnDown);
             }
             catch (COMException ex)
@@ -249,11 +250,40 @@ namespace ScanToPDF
                 XGraphics graphics = XGraphics.FromPdfPage(page);
                 graphics.DrawImage(image, 0, 0, page.Width, page.Height);
             }
+
             if (doc.PageCount > 0)
             {
                 string name = "pdf" + DateTime.Now.ToString(format) + ".pdf";
                 string path = resultDirectory + @"\" + name;
-                doc.Save(path);
+
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.InitialDirectory = resultDirectory;
+                sfd.DefaultExt = "txt";
+                sfd.Filter = "PDF Files (*.pdf) | *.pdf";
+                sfd.RestoreDirectory = true;
+                sfd.FileName = name;
+                if (sfd.ShowDialog() == true)
+                {
+                    doc.Save(sfd.FileName);
+                }
+
+                if (checkDelete.IsChecked == true)
+                {
+                    foreach (PhotoElement pe in listDocuments.Items)
+                    {
+                        try
+                        {
+                            listDocuments.Items.Remove(pe);
+                            System.GC.Collect();
+                            File.Delete(pe.getPath());
+                            System.GC.WaitForPendingFinalizers();
+                        }
+                        catch (IOException ex)
+                        {
+                            MessageBox.Show("Non è possibile eliminare il file\n" + ex.Message);
+                        }
+                    }
+                }
             }
         }
 
@@ -274,17 +304,23 @@ namespace ScanToPDF
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             //enableCondition(listDocuments.Items.Count > 0))
-            listDocuments.Items.Remove(currentPhotoElement);
-            listDocuments.SelectedItem = -1;
 
-            System.GC.Collect();
-            System.GC.WaitForPendingFinalizers();
-            File.Delete(currentPhotoElement.getPath());
-
-            btnPreview.IsEnabled = false;
-            btnDelete.IsEnabled = false;
-            enableCondition((listDocuments.Items.Count > 1), btnUp, btnDown);
-            enableCondition((listDocuments.Items.Count > 0), listDocuments,btnCreatePDF);
+            try
+            {
+                listDocuments.Items.Remove(currentPhotoElement);
+                listDocuments.SelectedItem = -1;
+                System.GC.Collect();
+                File.Delete(currentPhotoElement.getPath());
+                System.GC.WaitForPendingFinalizers();
+                btnPreview.IsEnabled = false;
+                btnDelete.IsEnabled = false;
+                enableCondition((listDocuments.Items.Count > 1), btnUp, btnDown);
+                enableCondition((listDocuments.Items.Count > 0), listDocuments, btnCreatePDF, checkDelete);
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
