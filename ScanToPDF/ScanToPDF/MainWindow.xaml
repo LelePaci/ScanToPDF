@@ -16,7 +16,7 @@
         <Button x:Name="btnDelete" Content="Rimuovi" Margin="289,471,0,0" VerticalAlignment="Top" Height="31" HorizontalAlignment="Left" Width="274" Click="btnDelete_Click"/>
         <Button x:Name="btnUp" Content="Su" Margin="492,311,0,0" VerticalAlignment="Top" Height="50" HorizontalAlignment="Left" Width="60"/>
         <Button x:Name="btnDown" Content="Giù" Margin="492,366,0,0" VerticalAlignment="Top" Height="50" HorizontalAlignment="Left" Width="60"/>
-        <Button x:Name="btnCreatePDF" Content="Crea documento PDF" Margin="10,555,10,0" FontSize="25" Click="btnCreatePDF_Click" Height="64" VerticalAlignment="Top"/>
+        <Button x:Name="btnCreatePDF" Content="Crea documento PDF" Margin="10,555,10,10" FontSize="25" Click="btnCreatePDF_Click"/>
         <Label Content="Sposta" Margin="492,275,0,0" VerticalAlignment="Top" FontSize="16" HorizontalAlignment="Left" Width="60"/>
         <TextBox x:Name="txtDebug" HorizontalAlignment="Left" Height="23" Margin="443,224,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
         <Label Content="Formato colore:" HorizontalAlignment="Left" Margin="10,46,0,0" VerticalAlignment="Top" Width="271" FontSize="16"/>
